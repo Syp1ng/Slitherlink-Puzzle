@@ -1,0 +1,187 @@
+package sample;
+
+import java.util.Stack;
+
+public class Puzzle {
+    public boolean stepByStep = false;
+
+    GameField gameField;
+
+    String[] representGameFieldForGUI;
+
+
+public Puzzle(){
+    gameField = new GameField();
+    }
+
+
+    Stack<Point> visitedPoints = new Stack<>();
+
+    private boolean checkICanGoTHere(Point p) {
+        //empty Field?
+        //System.out.println(p.X+"/"+p.Y);
+        if (p.Y > gameField.getYSize() -1 || p.Y< 0 ||
+                p.X> gameField.getXSize()-1 || p.X <0) return false;
+        if (gameField.charFromPoint(p)!=' ') return false;
+        //get all Numbers associated with this place
+        Stack<Point> numberFields = new Stack<>();
+        if (p.Y+1 <gameField.getYSize() &&Character.isDigit(gameField.charFromPoint(p.X, p.Y+1))){
+            numberFields.push(new Point(p.X, p.Y+1));
+        }
+        if (p.Y-1 > 0 && Character.isDigit(gameField.charFromPoint(p.X, p.Y-1))){
+            numberFields.push(new Point(p.X, p.Y-1));
+        }
+        if (p.X+1 <gameField.getXSize() && Character.isDigit(gameField.charFromPoint(p.X+1, p.Y))){
+            numberFields.push(new Point(p.X+1, p.Y));
+        }
+        if (p.X-1 > 0 && Character.isDigit(gameField.charFromPoint(p.X-1, p.Y))){
+            numberFields.push(new Point(p.X-1, p.Y));
+        }
+        //check if nodes  are already full
+        while(!numberFields.empty()){
+            int aquiredRoutes = Character.getNumericValue(gameField.charFromPoint(numberFields.lastElement()));
+            int actualCounter = countConnectionsOnPoint(numberFields.lastElement());
+            if (aquiredRoutes == actualCounter) return false;
+            numberFields.pop();
+        }
+
+        return true;
+    }
+
+    private int countConnectionsOnPoint(Point p) {
+        int counter = 0;
+        if (gameField.charFromPoint(p.X, p.Y+1)!=' ') counter++;
+        if (gameField.charFromPoint(p.X, p.Y-1)!=' ') counter++;
+        if (gameField.charFromPoint(p.X+1, p.Y)!=' ') counter++;
+        if (gameField.charFromPoint(p.X-1, p.Y)!=' ') counter++;
+        return counter;
+    }
+
+
+    boolean setback = false;
+    public void backtrackBasic(){
+        if(visitedPoints.empty()){
+            visitedPoints.push(getStartingPoint());
+        }
+        // checkfinished
+        if (!checkFinished()) {
+            if (FindAndExecuteNextStep() != true) {
+                //goback to an unexplored Point
+                goBack();
+            }
+            gameField.outConsole();
+            if(stepByStep){
+                return;
+            }
+            //go on
+            backtrackBasic();
+        }
+        //when finished
+        System.out.println("Solution found");
+    }
+
+    private void goBack(){
+        //last Step is auf jedenfall wrong
+        visitedPoints.pop();
+        gameField.resetPoint();
+        //delete more steps if its not possible
+        while ( visitedPoints.lastElement().waysChecked == 4) {
+            gameField.resetPoint();
+            visitedPoints.pop();
+        }
+        setback = true;
+    }
+
+        boolean FindAndExecuteNextStep(){
+        Point actualPoint = visitedPoints.lastElement();
+        int stepsDoneBefore = 0;
+            if (setback == true) {
+                stepsDoneBefore = actualPoint.waysChecked;
+                setback = false; //reset
+            }
+            switch (stepsDoneBefore) {
+                case 0: //go down
+                    if (checkICanGoTHere(new Point(actualPoint.X, actualPoint.Y + 1))) {
+                        Point newPoint = new Point(actualPoint.X, actualPoint.Y +2);
+                        visitedPoints.lastElement().waysChecked=1;
+                        visitedPoints.add(newPoint);
+                        gameField.setLine(new Point(actualPoint.X, actualPoint.Y +1), GameField.verticalChar);
+                        return true;
+                    }
+                case 1: //go up
+                    if (checkICanGoTHere(new Point(actualPoint.X, actualPoint.Y -1))) {
+                        Point newPoint = new Point(actualPoint.X, actualPoint.Y -2);
+                        visitedPoints.lastElement().waysChecked=2;
+                        visitedPoints.add(newPoint);
+                        gameField.setLine(new Point(actualPoint.X, actualPoint.Y -1), GameField.verticalChar);
+                        return true;
+                    }
+                case 2: //go right
+                    if (checkICanGoTHere(new Point(actualPoint.X+1, actualPoint.Y))) {
+                        Point newPoint = new Point(actualPoint.X+2, actualPoint.Y);
+                        visitedPoints.lastElement().waysChecked=3;
+                        visitedPoints.add(newPoint);
+                        gameField.setLine(new Point(actualPoint.X+1, actualPoint.Y), GameField.horizontalChar);
+                        return true;
+                    }
+                case 3: // go left
+                    if (checkICanGoTHere(new Point(actualPoint.X-1, actualPoint.Y))) {
+                        Point newPoint = new Point(actualPoint.X-2, actualPoint.Y );
+                        visitedPoints.lastElement().waysChecked=4;
+                        visitedPoints.add(newPoint);
+                        gameField.setLine(new Point(actualPoint.X-1, actualPoint.Y), GameField.horizontalChar);
+                        return true;
+                    }
+                default: //No Posibility Found
+                    return false;
+            }
+        }
+
+
+    private boolean checkFirstRouteConnectsLastRoute(){
+        if(visitedPoints.size()==1)return false;
+        Point firstPoint = visitedPoints.firstElement();
+        Point lastPoint = visitedPoints.lastElement();
+        if(firstPoint.X+2 == lastPoint.X && firstPoint.Y == lastPoint.Y ||
+                firstPoint.X-2 == lastPoint.X && firstPoint.Y == lastPoint.Y ||
+                firstPoint.X == lastPoint.X && firstPoint.Y+2 == lastPoint.Y ||
+                firstPoint.X == lastPoint.X && firstPoint.Y-2 == lastPoint.Y){
+            return true;
+        }
+        return false;
+    }
+
+    //Start at a Number field
+        public Point getStartingPoint() {
+        for (int y = 1; y < gameField.getYSize(); y++) {
+            for (int x = 1; x < gameField.getXSize(); x += 2) {
+                if (gameField.charFromPoint(x,y) != ' ') {
+                    gameField.setLine(new Point(x,y+1), GameField.notChar);
+                    return new Point(x+1, y+1);
+                }
+            }
+        }
+        return new Point(1,1);
+    }
+
+    private  boolean checkFinished() {
+        for (int y = 1; y < gameField.getYSize(); y++) {
+            for (int x = 1; x < gameField.getXSize(); x += 2) {
+                if (Character.isDigit(gameField.charFromPoint(x,y))){
+                    if (gameField.charFromPoint(x,y)!=countConnectionsOnPoint(new Point(x,y))) return false;
+                }
+            }
+        }
+        return true;
+    }
+
+
+
+
+
+    public void readUserField(String[] userField){
+
+    }
+
+
+}
