@@ -1,18 +1,11 @@
 package sample;
-
-import javafx.application.Application;
-import javafx.fxml.JavaFXBuilderFactory;
-
 import java.util.Stack;
 
-public class SlitherlinkSolver extends Thread {
-    public boolean stepByStep = true; //for going Step By Step
-    private Point startingPoint;
+public class SlitherlinkSolver {
+    Point startingPoint;
 
-    public void run(){
-        var x = solution(new GameField());
-    }
-    public GameField solution(GameField gameField) {
+    //starting point
+    public boolean solution(GameField gameField) {
         System.out.println("starting Backtracking");
         GameField finalSolution = new GameField();
         Point[] availableStartingPoints = getStartingPoint(gameField);
@@ -21,34 +14,14 @@ public class SlitherlinkSolver extends Thread {
             finalSolution = nextStep(gameField, startingPoint);
             if(finalSolution != null) {
                 finalSolution.printToConsole();
-                break;
+                return true;
             }
         }
-        return finalSolution;
+        return false;
     }
-    public boolean haveAGo;
-    private GameField nextStep(GameField gameField, Point p){
-        //triggerGuiUpdate();
 
-        //gameField.outConsole();
-
-
-        if(stepByStep) {
-            /*
-            while (haveAGo == false) {
-
-            }
-            */
-                try {
-                    System.out.println("wait");
-                    currentThread().suspend();
-
-                } catch (Exception e) {
-
-            }
-        }
-
-
+    public GameField nextStep(GameField gameField, Point p){
+        gameField.printToConsole();
         if(checkFinished(gameField, p)) {
             System.out.println("solution found");
             return gameField;
@@ -58,34 +31,47 @@ public class SlitherlinkSolver extends Thread {
         if(!checkConnectionsPoint(gameField, p)) return null;
 
         if(checkICanGoTHere(gameField, new Point (p.X, p.Y+1))){
-            gameField.setLine(new Point(p.X, p.Y+1), GameField.verticalChar);
+            gameField.setCharToField(new Point(p.X, p.Y+1), GameField.verticalChar);
             GameField solution =  nextStep(gameField, new Point(p.X, p.Y+2));
-            if(solution!=null) return solution;
+            if(solution!=null) {
+                gameField.addSolutionStep(new Point(p.X, p.Y+1));
+                return solution;
+            }
             gameField.resetLine(new Point(p.X, p.Y+1));
         }
         if(checkICanGoTHere(gameField, new Point (p.X, p.Y-1))){
-            gameField.setLine(new Point(p.X, p.Y-1), GameField.verticalChar);
+            gameField.setCharToField(new Point(p.X, p.Y-1), GameField.verticalChar);
             GameField solution =  nextStep(gameField, new Point(p.X, p.Y-2));
-            if(solution!=null) return solution;
+            if(solution!=null) {
+                gameField.addSolutionStep(new Point(p.X, p.Y-1));
+                return solution;
+            }
             gameField.resetLine(new Point(p.X, p.Y-1));
         }
         if(checkICanGoTHere(gameField, new Point (p.X+1, p.Y))){
-            gameField.setLine(new Point(p.X+1, p.Y), GameField.horizontalChar);
+            gameField.setCharToField(new Point(p.X+1, p.Y), GameField.horizontalChar);
             GameField solution =  nextStep(gameField, new Point(p.X+2, p.Y));
-            if(solution!=null) return solution;
+            if(solution!=null) {
+                gameField.addSolutionStep(new Point(p.X+1, p.Y));
+                return solution;
+            }
             gameField.resetLine(new Point(p.X+1, p.Y));
         }
         if(checkICanGoTHere(gameField, new Point (p.X-1, p.Y))){
-            gameField.setLine(new Point(p.X-1, p.Y), GameField.horizontalChar);
+            gameField.setCharToField(new Point(p.X-1, p.Y), GameField.horizontalChar);
             GameField solution =  nextStep(gameField, new Point(p.X-2, p.Y));
-            if(solution!=null) return solution;
+            if(solution!=null) {
+                gameField.addSolutionStep(new Point(p.X-1, p.Y));
+                return solution;
+            }
             gameField.resetLine(new Point(p.X-1, p.Y));
         }
         return null;
 
     }
 
-    private boolean checkConnectionsPoint(GameField gameField, Point p){
+    //Check if there is connection between Points, so don't cross a connection between two points --> because you have to go back directly --> at the end you close the circle
+    boolean checkConnectionsPoint(GameField gameField, Point p){
         int currentLinesOnPoint =0;
         if (p.Y+1 <gameField.getYSize() && gameField.getCharFromPoint(p.X, p.Y+1)!=' '){
             currentLinesOnPoint++;
@@ -99,12 +85,10 @@ public class SlitherlinkSolver extends Thread {
         if (p.X-1 > 0 && gameField.getCharFromPoint(p.X-1, p.Y)!=' '){
             currentLinesOnPoint++;
         }
-        if (currentLinesOnPoint<2) return true;
+        if (currentLinesOnPoint<2) return true; //then there aren't two lines connected --> valid
         return  false;
     }
-    private boolean checkICanGoTHere(GameField gameField, Point p) {
-        //empty Field?
-        //System.out.println(p.X+"/"+p.Y);
+    boolean checkICanGoTHere(GameField gameField, Point p) {
         if (p.Y > gameField.getYSize() -1 || p.Y< 0 ||
                 p.X> gameField.getXSize()-1 || p.X <0) return false;
         if (gameField.getCharFromPoint(p)!=' ') return false;
@@ -133,7 +117,7 @@ public class SlitherlinkSolver extends Thread {
         return true;
     }
 
-    private int countConnectionsOnPoint(GameField gameField, Point p) {
+    int countConnectionsOnPoint(GameField gameField, Point p) {
         int counter = 0;
         if (gameField.getCharFromPoint(p.X, p.Y+1)!=' ') counter++;
         if (gameField.getCharFromPoint(p.X, p.Y-1)!=' ') counter++;
@@ -142,7 +126,7 @@ public class SlitherlinkSolver extends Thread {
         return counter;
     }
 
-    private  boolean checkFinished(GameField gameField, Point p) {
+    boolean checkFinished(GameField gameField, Point p) {
         if(!(p.X == startingPoint.X && p.Y == startingPoint.Y)) return false;
         for (int y = 1; y < gameField.getYSize(); y++) {
             for (int x = 1; x < gameField.getXSize(); x += 2) {
@@ -154,10 +138,11 @@ public class SlitherlinkSolver extends Thread {
         return true;
     }
 
-    public Point[] getStartingPoint(GameField gameField) {
+    Point[] getStartingPoint(GameField gameField) {
         for (int y = 1; y < gameField.getYSize(); y++) {
             for (int x = 1; x < gameField.getXSize(); x += 2) {
                 char characterAtPoint = gameField.getCharFromPoint(x,y);
+                //game makes no sense without numbers --> that's why i suppose there is a number
                 if (Character.isDigit(characterAtPoint)&&Character.getNumericValue(characterAtPoint)!=0){
                     return new Point[]{new Point(x+1, y+1), new Point(x-1,y-1)};
                 }
@@ -165,6 +150,5 @@ public class SlitherlinkSolver extends Thread {
         }
         return null;
     }
-
 }
 
