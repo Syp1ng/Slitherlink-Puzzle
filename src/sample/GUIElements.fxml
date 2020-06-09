@@ -1,25 +1,23 @@
-<?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Text?>
+<GridPane xmlns:fx="http://javafx.com/fxml"
+          fx:controller="sample.Controller" alignment="center" hgap="10" vgap="40">
+    <GridPane GridPane.rowIndex="0" GridPane.columnSpan="4" onDragOver="#handleDragOver"
+              onDragDropped="#handleDragDrop" vgap="10">
+        <Text text="Please drop a JSON file here."/>
+    </GridPane>
 
-<?import javafx.scene.layout.VBox?>
-<GridPane fx:controller="sample.Controller"
-          xmlns:fx="http://javafx.com/fxml" alignment="center" hgap="10" vgap="20">
-    <VBox fx:id="vbox" GridPane.rowIndex="0" GridPane.columnSpan="3">
-
-    </VBox>
-    <Button fx:id="lala" GridPane.columnIndex="3" GridPane.rowIndex="0" onAction="#setUpDrop" prefWidth="100.0"
-            text="Close [F8]" />
     <GridPane fx:id="guiGameField" GridPane.rowIndex="1" GridPane.columnSpan="4" alignment="CENTER">
 
     </GridPane>
-    <Button  fx:id="stepButton" onAction="#stepByStepAction" disable="true" prefWidth="100.0"
-            text="Step [F5]" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+    <Button fx:id="stepButton" onAction="#stepByStepAction" disable="true" prefWidth="100.0"
+            text="Step [F5]" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
     <Button fx:id="completeButton" onAction="#completeAction" disable="true" prefWidth="100.0"
-            text="Solution [F6]" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-    <Button fx:id="closeButton" onAction="#closeApplication"  prefWidth="100.0"
-            text="Close [F8]" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+            text="Solution [F6]" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+    <Button fx:id="closeButton" onAction="#closeApplication" prefWidth="100.0"
+            text="Close [F8]" GridPane.columnIndex="2" GridPane.rowIndex="2"/>
     <Button fx:id="resetButton" onAction="#reset" prefWidth="100.0"
-            text="Reset" GridPane.columnIndex="3" GridPane.rowIndex="2" />
+            text="Reset" GridPane.columnIndex="3" GridPane.rowIndex="2"/>
 
 </GridPane>
