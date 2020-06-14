@@ -65,32 +65,36 @@ public class Controller extends Application {
         //Key Binding
         mainScene.setOnKeyPressed(e -> {
             KeyCode keyPressed = e.getCode();
-            switch (keyPressed) {
-                case F5:
-                    System.out.println("Event: Pressed Key " + keyPressed);
-                    if(keysAreActive){
-                        stepByStepAction();
-                    }
-                    break;
-                case F6:
-                    System.out.println("Event: Pressed Key " + keyPressed);
-                    if(keysAreActive){
-                        completeAction();
-                    }
-                    break;
-                case F8:
-                    System.out.println("Event: Pressed Key " + keyPressed);
-                    closeApplication();
-                    break;
-            }
+            actionOnKeyPressed(keyPressed);
         });
-
 
         //css for design of the lines
         mainScene.getStylesheets().add("sample/controlStyle.css");
 
         primaryStage.setScene(mainScene);
         primaryStage.show();
+    }
+
+    //do certain actions when a certain key is pressed
+    private void actionOnKeyPressed(KeyCode keyPressed) {
+        switch (keyPressed) {
+            case F5:
+                System.out.println("Event: Pressed Key " + keyPressed);
+                if(keysAreActive){
+                    stepByStepAction();
+                }
+                break;
+            case F6:
+                System.out.println("Event: Pressed Key " + keyPressed);
+                if(keysAreActive){
+                    completeAction();
+                }
+                break;
+            case F8:
+                System.out.println("Event: Pressed Key " + keyPressed);
+                closeApplication();
+                break;
+        }
     }
 
     //reset everything in GUI Field and disable the buttons
