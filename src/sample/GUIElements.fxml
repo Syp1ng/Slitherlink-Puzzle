@@ -2,7 +2,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Text?>
 <GridPane xmlns:fx="http://javafx.com/fxml"
-          fx:controller="sample.Controller" alignment="center" hgap="10" vgap="40">
+          fx:controller="sample.Controller" alignment="center" hgap="10" vgap="40" onKeyPressed="#keyPressedHandler">
     <GridPane GridPane.rowIndex="0" GridPane.columnSpan="4" onDragOver="#handleDragOver"
               onDragDropped="#handleDragDrop" vgap="10">
         <Text text="Please drop a JSON file here."/>

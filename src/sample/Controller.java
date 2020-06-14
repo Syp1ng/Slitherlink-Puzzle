@@ -1,6 +1,7 @@
 package sample;
 
 import javafx.application.Application;
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.HPos;
@@ -12,10 +13,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
-import javafx.scene.input.DragEvent;
-import javafx.scene.input.Dragboard;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.TransferMode;
+import javafx.scene.input.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
@@ -50,7 +48,7 @@ public class Controller extends Application {
 
 
     //returns the json output of a file (path)
-    static JSONObject readJSONFile(File file) throws JSONException, IOException {
+    private static JSONObject readJSONFile(File file) throws JSONException, IOException {
         String content = new String(Files.readAllBytes(file.toPath()));
         return new JSONObject(content);
     }
@@ -62,12 +60,6 @@ public class Controller extends Application {
 
         Scene mainScene = new Scene(root, 500, 500);
 
-        //Key Binding
-        mainScene.setOnKeyPressed(e -> {
-            KeyCode keyPressed = e.getCode();
-            actionOnKeyPressed(keyPressed);
-        });
-
         //css for design of the lines
         mainScene.getStylesheets().add("sample/controlStyle.css");
 
@@ -75,44 +67,22 @@ public class Controller extends Application {
         primaryStage.show();
     }
 
-    //do certain actions when a certain key is pressed
-    private void actionOnKeyPressed(KeyCode keyPressed) {
-        switch (keyPressed) {
-            case F5:
-                System.out.println("Event: Pressed Key " + keyPressed);
-                if(keysAreActive){
-                    stepByStepAction();
-                }
-                break;
-            case F6:
-                System.out.println("Event: Pressed Key " + keyPressed);
-                if(keysAreActive){
-                    completeAction();
-                }
-                break;
-            case F8:
-                System.out.println("Event: Pressed Key " + keyPressed);
-                closeApplication();
-                break;
-        }
-    }
-
     //reset everything in GUI Field and disable the buttons
     @FXML
-    void reset() {
+    private void reset() {
         started = false;
         guiGameField.getChildren().clear();
         disableButtons();
 
     }
 
-    void disableButtons() {
+    private void disableButtons() {
         stepButton.setDisable(true);
         completeButton.setDisable(true);
         keysAreActive = false;
     }
 
-    void activateButtons() {
+    private void activateButtons() {
         stepButton.setDisable(false);
         completeButton.setDisable(false);
         keysAreActive = true;
@@ -120,7 +90,7 @@ public class Controller extends Application {
 
     //show the complete Solution at once
     @FXML
-    void completeAction() {
+    private void completeAction() {
         if (!started) {
             //calculate the solution if not already happened
             pu.solution(gamefield);
@@ -131,7 +101,7 @@ public class Controller extends Application {
 
     //show every final solution step
     @FXML
-    void stepByStepAction() {
+    private void stepByStepAction() {
         if (started) {
             //show step by step until stack of steps is empty
             if (!gamefield.stepCollectionEmpty()) {
@@ -148,19 +118,19 @@ public class Controller extends Application {
     }
 
     @FXML
-    void closeApplication() {
+    private void closeApplication() {
         System.exit(0);
     }
 
     // call GUI designer with only one single point
-    void GUISingle(Point p) {
+    private void GUISingle(Point p) {
         char characterAtPoint = gamefield.getCharFromPoint(p);
         setStyle(characterAtPoint, p.getX(), p.getY());
 
     }
 
     //get every point of the field --> call GUI designer with every point
-    void GUIEverything() {
+    private void GUIEverything() {
         for (int y = 0; y < gamefield.getYSize(); y++) {
             for (int x = 0; x < gamefield.getXSize(); x++) {
                 char characterAtPoint = gamefield.getCharFromPoint(new Point(x, y));
@@ -170,7 +140,7 @@ public class Controller extends Application {
     }
 
     //here the point will be set to the GUI grid
-    void setStyle(char characterAtPoint, int x, int y) {
+    private void setStyle(char characterAtPoint, int x, int y) {
         //design for connection point, numbers and empty cells
         if (Character.isDigit(characterAtPoint) || characterAtPoint == GameField.connectionPoint | characterAtPoint == ' ') {
             Label label = new Label(Character.toString(characterAtPoint));
@@ -199,7 +169,7 @@ public class Controller extends Application {
     }
 
     //prepare Gamefield with no error--> create gamefield --> parse
-    boolean prepareGameFieldWithoutErrors(File file) {
+    private boolean prepareGameFieldWithoutErrors(File file) {
         gamefield = new GameField();
         try {
             return gamefield.parseJSON(readJSONFile(file));
@@ -211,7 +181,7 @@ public class Controller extends Application {
 
     //Drag and drop event --> handle file --> GUI the starting points
     @FXML
-    void handleDragDrop(DragEvent event) {
+    private void handleDragDrop(DragEvent event) {
         Dragboard db = event.getDragboard();
         File file = db.getFiles().get(0);
         if (prepareGameFieldWithoutErrors(file)) {
@@ -223,9 +193,29 @@ public class Controller extends Application {
     }
 
     @FXML
-    void handleDragOver(DragEvent dragEvent) {
+    private void handleDragOver(DragEvent dragEvent) {
         if (dragEvent.getDragboard().hasFiles()) {
             dragEvent.acceptTransferModes(TransferMode.ANY);
+        }
+    }
+
+    //handler for keyPressed --> do certain actions when certain key is pressed & active
+    @FXML
+    private void keyPressedHandler(KeyEvent keyEvent) {
+        switch (keyEvent.getCode()) {
+            case F5:
+                if(keysAreActive){
+                    stepByStepAction();
+                }
+                break;
+            case F6:
+                if(keysAreActive){
+                    completeAction();
+                }
+                break;
+            case F8:
+                closeApplication();
+                break;
         }
     }
 }
