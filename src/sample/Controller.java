@@ -67,16 +67,19 @@ public class Controller extends Application {
             KeyCode keyPressed = e.getCode();
             switch (keyPressed) {
                 case F5:
+                    System.out.println("Event: Pressed Key " + keyPressed);
                     if(keysAreActive){
                         stepByStepAction();
                     }
                     break;
                 case F6:
+                    System.out.println("Event: Pressed Key " + keyPressed);
                     if(keysAreActive){
                         completeAction();
                     }
                     break;
                 case F8:
+                    System.out.println("Event: Pressed Key " + keyPressed);
                     closeApplication();
                     break;
             }
