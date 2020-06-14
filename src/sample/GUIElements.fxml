@@ -9,7 +9,6 @@
     </GridPane>
 
     <GridPane fx:id="guiGameField" GridPane.rowIndex="1" GridPane.columnSpan="4" alignment="CENTER">
-
     </GridPane>
     <Button fx:id="stepButton" onAction="#stepByStepAction" disable="true" prefWidth="100.0"
             text="Step [F5]" GridPane.columnIndex="0" GridPane.rowIndex="2"/>

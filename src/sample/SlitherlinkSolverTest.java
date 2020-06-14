@@ -59,8 +59,8 @@ class SlitherlinkSolverTest {
 
         solver.nextStep(gameField, solver.startingPoint);
         assertFalse(gameField.stepCollectionEmpty(), "this function should safe the steps in a collection when it has a solution");
-        assertEquals(3, gameField.getNextStep().X, "The first point should be 3/1 and saved in the collection");
-        assertEquals(1, gameField.getNextStep().Y, "The first point should be 3/1 and saved in the collection");
+        assertEquals(3, gameField.getNextStep().getX(), "The first point should be 3/1 and saved in the collection");
+        assertEquals(1, gameField.getNextStep().getY(), "The first point should be 3/1 and saved in the collection");
 
         gameField = new GameField(exampleNoSolution);
         assertTrue(gameField.stepCollectionEmpty(), "this function should safe the steps in a collection, but there's no solution -->empty");
@@ -131,10 +131,10 @@ class SlitherlinkSolverTest {
 
         Point[] calculatedStartingPoints = solver.getStartingPoint(gamefield);
         assertEquals(2, calculatedStartingPoints.length, "Should find 2 starting Points in the example field");
-        assertEquals(2, calculatedStartingPoints[0].X, "First starting point in the example should be 2/2");
-        assertEquals(2, calculatedStartingPoints[0].Y, "First starting point in the example should be 2/2");
-        assertEquals(0, calculatedStartingPoints[1].X, "First starting point in the example should be 0/0");
-        assertEquals(0, calculatedStartingPoints[1].Y, "First starting point in the example should be 0/0");
+        assertEquals(2, calculatedStartingPoints[0].getX(), "First starting point in the example should be 2/2");
+        assertEquals(2, calculatedStartingPoints[0].getY(), "First starting point in the example should be 2/2");
+        assertEquals(0, calculatedStartingPoints[1].getX(), "First starting point in the example should be 0/0");
+        assertEquals(0, calculatedStartingPoints[1].getY(), "First starting point in the example should be 0/0");
 
 
         //can't find starting point

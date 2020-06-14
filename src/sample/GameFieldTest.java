@@ -116,8 +116,8 @@ class GameFieldTest {
         gamefield.addSolutionStep(new Point(0, 1));
         assertFalse(gamefield.stepCollectionEmpty(), "Collection should now be filled");
         Point p = gamefield.getNextStep();
-        assertEquals(0, p.X, "Testing for x coordinate");
-        assertEquals(1, p.Y, "Testing for y coordinate");
+        assertEquals(0, p.getX(), "Testing for x coordinate");
+        assertEquals(1, p.getY(), "Testing for y coordinate");
         assertTrue(gamefield.stepCollectionEmpty(), "Collection should now be empty");
 
         //Testing with many elements
@@ -127,16 +127,16 @@ class GameFieldTest {
         gamefield.addSolutionStep(new Point(4, 5));
         assertFalse(gamefield.stepCollectionEmpty(), "Collection should now be filled");
         p = gamefield.getNextStep();
-        assertEquals(4, p.X, "Testing for x coordinate");
-        assertEquals(5, p.Y, "Testing for y coordinate");
+        assertEquals(4, p.getX(), "Testing for x coordinate");
+        assertEquals(5, p.getY(), "Testing for y coordinate");
         assertFalse(gamefield.stepCollectionEmpty(), "Collection should not be empty");
         p = gamefield.getNextStep();
-        assertEquals(2, p.X, "Testing for x coordinate");
-        assertEquals(3, p.Y, "Testing for y coordinate");
+        assertEquals(2, p.getX(), "Testing for x coordinate");
+        assertEquals(3, p.getY(), "Testing for y coordinate");
         assertFalse(gamefield.stepCollectionEmpty(), "Collection should not be empty");
         p = gamefield.getNextStep();
-        assertEquals(0, p.X, "Testing for x coordinate");
-        assertEquals(1, p.Y, "Testing for y coordinate");
+        assertEquals(0, p.getX(), "Testing for x coordinate");
+        assertEquals(1, p.getY(), "Testing for y coordinate");
         assertTrue(gamefield.stepCollectionEmpty(), "Collection should now be empty");
 
     }

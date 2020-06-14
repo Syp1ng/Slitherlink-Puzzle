@@ -11,6 +11,7 @@ public class GameField {
     static final char horizontalChar = '-';
     static final char verticalChar = '|';
 
+    //later used for every step in the solution
     private final Stack<Point> solutionSteps;
     private char[][] fieldData;
 
@@ -22,10 +23,9 @@ public class GameField {
     public GameField(char[][] testingField) {
         solutionSteps = new Stack<>();
         fieldData = testingField;
-
     }
 
-    /*
+    /* //example Data
         char fieldData[][] ={
                 {'.', ' ', '.', ' ', '.', ' ', '.', ' ', '.',},
                 {' ', '1', ' ', '2', ' ', '2', ' ', '3', ' ',},
@@ -68,34 +68,41 @@ public class GameField {
                 {'.', ' ', '.', ' ', '.', ' ', '.', ' ', '.', ' ', '.', ' ', '.', ' ','.', ' ', '.'},
         };
     */
+    //push all right steps from the solution in a stack
     public void addSolutionStep(Point p) {
-        System.out.println(p.X + "/" + p.Y);
+        System.out.println(p.getX() + "/" + p.getY());
         solutionSteps.push(p);
     }
 
+    //a acheck if it is empty
     public boolean stepCollectionEmpty() {
         return solutionSteps.empty();
     }
 
+    //for the step Solution --> return top of stack--> pop it --> until it is empty
     public Point getNextStep() {
         if (solutionSteps.empty()) return null;
         return solutionSteps.pop();
     }
 
+    //get the Char from the field with a Point p
     public char getCharFromPoint(Point p) {
-        return fieldData[p.Y][p.X];
+        return fieldData[p.getY()][p.getX()];
     }
 
+    //get the Char from the field with two ints, x and y
     public char getCharFromPoint(int x, int y) {
         return fieldData[y][x];
     }
 
+    //set a specific char to the field /gameData[][] --> could be line (in solver) or a number (in parsing)
     public void setCharToField(Point p, char c) {
-        fieldData[p.Y][p.X] = c;
+        fieldData[p.getY()][p.getX()] = c;
     }
 
+    //reset the Line
     public void resetLine(Point p) {
-        fieldData[p.Y][p.X] = ' ';
+        fieldData[p.getY()][p.getX()] = ' ';
     }
 
     public int getYSize() {
@@ -106,6 +113,7 @@ public class GameField {
         return fieldData[0].length;
     }
 
+    //print actual gameField / fielData[][] to console
     public void printToConsole() {
         System.out.println("**************************");
         for (int y = 0; y < fieldData.length; y++) {
@@ -118,6 +126,7 @@ public class GameField {
     }
 
 
+    //parse the jsonObject and save it in the fielData[][]
     public boolean parseJSON(JSONObject jsonObject) {
         try {
             //Different options to parse the fields
@@ -143,6 +152,7 @@ public class GameField {
                 }
                 setCharToField(new Point(x, y), number);
             }
+            printToConsole();
             return true;
         } catch (Exception e) {
             System.out.println("Error in parsing: " + e.getMessage());
@@ -151,14 +161,13 @@ public class GameField {
     }
 
 
+    //prepare the right spaces for the fielData[][] that lines also have space
     public void formatField() {
-        printToConsole();
         for (int y = 0; y < fieldData.length; y++) {
             for (int x = 0; x < fieldData[y].length; x++) {
                 if (y % 2 == 0 && x % 2 == 0) fieldData[y][x] = connectionPoint;
                 else fieldData[y][x] = ' ';
             }
         }
-        printToConsole();
     }
 }

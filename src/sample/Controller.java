@@ -29,25 +29,26 @@ import java.nio.file.Files;
 
 
 public class Controller extends Application {
+    final int sizeGuiElements = 30;
+    final int fontSize = 20;
+    //FXML Elements
+    @FXML
+    GridPane guiGameField;
+    @FXML
+    Button stepButton;
+    @FXML
+    Button completeButton;
     private boolean started = false;
     private SlitherlinkSolver pu = new SlitherlinkSolver();
     private GameField gamefield = new GameField();
-    final int sizeGuiElements = 30;
-    final int fontSize = 20;
 
-    //FXML Elements
-    @FXML
-    private GridPane guiGameField;
-    @FXML
-    private Button stepButton;
-    @FXML
-    private Button completeButton;
-
-
+    //-->main
     public static void main(String[] args) {
         launch(args);
     }
 
+
+    //returns the json output of a file (path)
     static JSONObject readJSONFile(File file) throws JSONException, IOException {
         String content = new String(Files.readAllBytes(file.toPath()));
         return new JSONObject(content);
@@ -60,6 +61,7 @@ public class Controller extends Application {
 
         Scene mainScene = new Scene(root, 500, 500);
 
+        //css for design of the lines
         mainScene.getStylesheets().add("sample/controlStyle.css");
 
 
@@ -82,8 +84,9 @@ public class Controller extends Application {
 
         primaryStage.setScene(mainScene);
         primaryStage.show();
-        }
+    }
 
+    //reset everything in GUI Field and disable the buttons
     @FXML
     void reset() {
         started = false;
@@ -102,29 +105,32 @@ public class Controller extends Application {
         completeButton.setDisable(false);
     }
 
+    //show the complete Solution at once
     @FXML
     void completeAction() {
-        if (started) GUIEverything();
-        else {
+        if (!started) {
+            //calculate the solution if not already happened
             pu.solution(gamefield);
-            GUIEverything();
-            disableButtons();
         }
+        GUIEverything();
+        disableButtons();
     }
 
+    //show every final solution step
     @FXML
     void stepByStepAction() {
         if (started) {
+            //show step by step until stack of steps is empty
             if (!gamefield.stepCollectionEmpty()) {
                 GUISingle(gamefield.getNextStep());
             } else {
                 disableButtons();
             }
         } else {
+            //calculate solution if not already happened --> show a step (call this function again)
             started = true;
             pu.solution(gamefield);
             stepByStepAction();
-
         }
     }
 
@@ -133,13 +139,14 @@ public class Controller extends Application {
         System.exit(0);
     }
 
-    // Printing Field
+    // call GUI designer with only one single point
     void GUISingle(Point p) {
         char characterAtPoint = gamefield.getCharFromPoint(p);
-        setStyle(characterAtPoint, p.X, p.Y);
+        setStyle(characterAtPoint, p.getX(), p.getY());
 
     }
 
+    //get every point of the field --> call GUI designer with every point
     void GUIEverything() {
         for (int y = 0; y < gamefield.getYSize(); y++) {
             for (int x = 0; x < gamefield.getXSize(); x++) {
@@ -149,14 +156,17 @@ public class Controller extends Application {
         }
     }
 
+    //here the point will be set to the GUI grid
     void setStyle(char characterAtPoint, int x, int y) {
-        if (Character.isDigit(characterAtPoint) || characterAtPoint == GameField.connectionPoint | characterAtPoint ==' ') {
+        //design for connection point, numbers and empty cells
+        if (Character.isDigit(characterAtPoint) || characterAtPoint == GameField.connectionPoint | characterAtPoint == ' ') {
             Label label = new Label(Character.toString(characterAtPoint));
             label.setAlignment(Pos.CENTER);
             label.setFont(Font.font(null, FontWeight.BOLD, fontSize));
             label.setPrefSize(sizeGuiElements, sizeGuiElements);
             guiGameField.add(label, x, y);
         }
+        //design for vertical Line
         if (characterAtPoint == GameField.verticalChar) {
             Separator separator1 = new Separator();
             separator1.setPrefSize(sizeGuiElements, sizeGuiElements);
@@ -165,6 +175,7 @@ public class Controller extends Application {
             separator1.setValignment(VPos.CENTER);
             guiGameField.add(separator1, x, y);
         }
+        //design for horizontal line
         if (characterAtPoint == GameField.horizontalChar) {
             Separator separator1 = new Separator();
             separator1.setPrefSize(sizeGuiElements, sizeGuiElements);
@@ -174,6 +185,7 @@ public class Controller extends Application {
         }
     }
 
+    //prepare Gamefield with no error--> create gamefield --> parse
     boolean prepareGameFieldWithoutErrors(File file) {
         gamefield = new GameField();
         try {
@@ -184,6 +196,7 @@ public class Controller extends Application {
         }
     }
 
+    //Drag and drop event --> handle file --> GUI the starting points
     @FXML
     void handleDragDrop(DragEvent event) {
         Dragboard db = event.getDragboard();
