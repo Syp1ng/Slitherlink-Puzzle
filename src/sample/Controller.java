@@ -41,6 +41,7 @@ public class Controller extends Application {
     private boolean started = false;
     private SlitherlinkSolver pu = new SlitherlinkSolver();
     private GameField gamefield = new GameField();
+    private boolean keysAreActive = false;
 
     //-->main
     public static void main(String[] args) {
@@ -61,19 +62,19 @@ public class Controller extends Application {
 
         Scene mainScene = new Scene(root, 500, 500);
 
-        //css for design of the lines
-        mainScene.getStylesheets().add("sample/controlStyle.css");
-
-
         //Key Binding
         mainScene.setOnKeyPressed(e -> {
-            KeyCode l = e.getCode();
-            switch (l) {
+            KeyCode keyPressed = e.getCode();
+            switch (keyPressed) {
                 case F5:
-                    stepByStepAction();
+                    if(keysAreActive){
+                        stepByStepAction();
+                    }
                     break;
                 case F6:
-                    completeAction();
+                    if(keysAreActive){
+                        completeAction();
+                    }
                     break;
                 case F8:
                     closeApplication();
@@ -81,6 +82,9 @@ public class Controller extends Application {
             }
         });
 
+
+        //css for design of the lines
+        mainScene.getStylesheets().add("sample/controlStyle.css");
 
         primaryStage.setScene(mainScene);
         primaryStage.show();
@@ -98,11 +102,13 @@ public class Controller extends Application {
     void disableButtons() {
         stepButton.setDisable(true);
         completeButton.setDisable(true);
+        keysAreActive = false;
     }
 
     void activateButtons() {
         stepButton.setDisable(false);
         completeButton.setDisable(false);
+        keysAreActive = true;
     }
 
     //show the complete Solution at once
